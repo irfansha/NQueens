@@ -2,6 +2,12 @@
 /* Copyright 2019 Oliver Kullmann*/
 
 /*
+Started from the copy:
+Url: https://github.com/OKullmann/oklibrary/commits/master/Satisfiability/Transformers/Generators/Queens/SimpleBacktracking/NQueens_ct.cpp
+Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
+*/
+
+/*
   Computes the N-Queens count for N given as macro NN, e.g. for N=16, using
   the makefile in the same directory as this file:
 
@@ -15,101 +21,13 @@
 
 TODOS:
 
-1. Establish timing
-
-Using the updated makefile, now with N=16.
-
-Timing 17/3/2019
-
-csltok (gcc 8.3.0):
-NicolosiCounting> time ./qcount_ct
-14772512 355451208
-real    0m16.799s
-user    0m16.670s
-sys     0m0.081s
-
-With new optimisation-options
-  -Ofast -DNDEBUG -march=native -fwhole-program -static
-compared to old ones
-  -Ofast -DNDEBUG -ffinite-math-only -funroll-loops -fwhole-program -fno-math-errno -funsafe-loop-optimizations
-we get
-NicolosiCounting> time ./qcount_ct
-14772512 355451208
-real    0m16.911s
-user    0m16.868s
-sys     0m0.002s
-
-There seems to be a slowdown.
-
-Playing with options:
- - "-static" might yield some slowdown
- - "-funroll-loops" might yield some slowdown
- - "-funsafe-loop-optimizations" might yield some speedup
-
-Unclear whether -static has an effect on qcount; so let's leave it out here.
-
-cs-wsok:
-NicolosiCounting> time ./qcount_ct
-14772512 355451208
-real    0m12.677s
-user    0m12.668s
-sys     0m0.002s
-
-With new options:
-csoliver@cs-wsok:~/OKplatform/OKsystem/OKlib/Satisfiability/Transformers/Generators/Queens/NicolosiCounting> time ./qcount_ct
-14772512 355451208
-real    0m12.320s
-user    0m12.312s
-sys     0m0.000s
-
-Possibly small improvement.
-
-Without -static:
-NicolosiCounting> time ./qcount_ct
-14772512 355451208
-real    0m12.584s
-user    0m12.574s
-sys     0m0.001s
-
-This might have relevance.
-
-NicolosiCounting> rm qcount_ct; make CXXFLAGS="-static" qcount_ct
-g++ -DNN=16 --std=c++17 -pedantic -fmax-errors=5 -Wall -Wextra -Ofast -DNDEBUG -march=native -fwhole-program -funsafe-loop-optimizations  -static NQueens_ct.cpp -o qcount_ct
-csoliver@cs-wsok:~/OKplatform/OKsystem/OKlib/Satisfiability/Transformers/Generators/Queens/NicolosiCounting> time ./qcount_ct14772512 355451208
-real    0m12.326s
-user    0m12.317s
-sys     0m0.000s
-
-So on this platform, -static might have some positive effect.
-
-
-csverify:
-NicolosiCounting$ time ./qcount_ct
-14772512 355451208
-real    0m10.153s
-user    0m10.149s
-sys     0m0.004s
-
-With new options:
-icolosiCounting$ time ./qcount_ct
-14772512 355451208
-real    0m9.209s
-user    0m9.205s
-sys     0m0.004s
-
-This should be an improvement.
-
-Seems unchanged by +- static and +- unsafe-loop-optimizations.
-
-
-2. Update C++
-
-3. Update makefile
- - Update options:
-  - DONE (for now): Need to experiment with optimisation options.
-  - Need to update the style.
-  - Need to introduce the new possibilities for Environment.hpp.
-
+1. Using complete diagonal and antidiagonal information:
+   - Instead of shifting diagonals, we have 2*N-1 bits to represent diagonals and antidiagonals set.
+   - The columns are represented with 2*N-1 bits but only N bits are considered at each step.
+      - The columns are now shifted at each step.
+   - This greatly simplies the complexity in double sweep algorithm.
+2. UnSAT test:
+   - XXX
 */
 
 
