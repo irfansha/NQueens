@@ -22,6 +22,8 @@ TODOS:
 
 1. Improving simple_backtracking:
    - The columns, diagonals and antidiagonals representations can be global avoiding copying.
+   - Unclear if making size global would make any difference.
+   - Using global variables does not seems to make any difference.
 */
 
 
@@ -43,7 +45,6 @@ constexpr size_t dn=2*NN-1;
 
 typedef std::uint_fast64_t count_t; // counting solutions
 typedef std::bitset<n> queen_t;
-typedef std::bitset<dn> queend_t;
 
 inline queen_t setbits(const size_t m) noexcept {
   assert(m <= n);
@@ -51,28 +52,6 @@ inline queen_t setbits(const size_t m) noexcept {
   for (size_t i = 0; i < m; ++i) res[i] = true;
   return res;
 }
-
-inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(i < n);
-  assert(j < n);
-  assert(((i-j) + (n-1)) <= 2*n-2);
-  x[(i-j) + (n-1)] = true;
-  return x;
-}
-inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(i < n);
-  assert(j < n);
-  x[i+j] = true;
-  return x;
-}
-inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t rowindex) noexcept {
-  queen_t newavail;
-  for (size_t j = 0; j < n; ++j) {
-    newavail[j] = ncolumns[j] or ndiag[(rowindex-j)+(n-1)] or nantid[rowindex+j];
-  }
-  return newavail;
-}
-
 inline queen_t setneighbours(queen_t x, const size_t i) noexcept {
   assert(i < n);
   x[i] = true;
@@ -96,6 +75,7 @@ inline queen_t setleftneighbour(queen_t x, const size_t i) noexcept {
   return x;
 }
 
+typedef std::bitset<dn> queend_t;
 count_t count=0, nodes=0;
 
 inline void backtracking(const queen_t avail,
@@ -125,6 +105,27 @@ inline void backtracking(const queen_t avail,
     }
 }
 
+inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
+  assert(i < n);
+  assert(j < n);
+  assert(((i-j) + (n-1)) <= 2*n-2);
+  x[(i-j) + (n-1)] = true;
+  return x;
+}
+inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
+  assert(i < n);
+  assert(j < n);
+  x[i+j] = true;
+  return x;
+}
+inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t rowindex) noexcept {
+  queen_t newavail;
+  for (size_t j = 0; j < n; ++j) {
+    newavail[j] = ncolumns[j] or ndiag[(rowindex-j)+(n-1)] or nantid[rowindex+j];
+  }
+  return newavail;
+}
+
 // Simple backtracking funtion.
 inline void simple_backtracking(const queen_t avail,
   const queen_t columns, const queend_t diag, const queend_t antid,
@@ -151,10 +152,65 @@ inline void simple_backtracking(const queen_t avail,
     }
 }
 
+
+queen_t gcolumns;
+queend_t gdiag, gantid;
+
+
+inline void setcolumn(const size_t i, const bool val) noexcept {
+  assert(i < n);
+  gcolumns[i] = val;
+}
+inline void setdiag(const size_t i, const size_t j, const bool val) noexcept {
+  assert(i < n);
+  assert(j < n);
+  assert(((i-j) + (n-1)) <= 2*n-2);
+  gdiag[(i-j) + (n-1)] = val;
+}
+inline void setantid(const size_t i, const size_t j, const bool val) noexcept {
+  assert(i < n);
+  assert(j < n);
+  gantid[i+j] = val;
+}
+inline queen_t rowavail(const size_t rowindex) noexcept {
+  queen_t newavail;
+  for (size_t j = 0; j < n; ++j) {
+    newavail[j] = gcolumns[j] or gdiag[(rowindex-j)+(n-1)] or gantid[rowindex+j];
+  }
+  return newavail;
+}
+
+// Optimised simple backtracking funtion.
+inline void op_simple_backtracking(const queen_t avail, const size_t size) noexcept {
+  assert(avail.any());
+  assert(gcolumns.count() == size);
+  ++nodes;
+  const size_t sp1 = size+1;
+  assert(sp1 < n);
+  const queen_t nextavail(rowavail(sp1));
+  if (nextavail.all()) return;
+  if (sp1+1 == n) {
+    for (size_t i = 0; i < n; ++i)
+      count += bool(avail[i] and not setneighbours(nextavail,i).all());
+  }
+  else
+    for (size_t i = 0; i < n; ++i) {
+      if (not avail[i]) continue;
+      setcolumn(i,true);
+      setdiag(sp1-1,i,true);
+      setantid(sp1-1,i,true);
+      const queen_t newavail(~rowavail(sp1));
+      if (newavail.any()) op_simple_backtracking(newavail,sp1);
+      setcolumn(i,false);
+      setdiag(sp1-1,i,false);
+      setantid(sp1-1,i,false);
+    }
+}
+
 }
 
 int main(const int argc, const char* const argv[]) {
-  if (argc != 2) { std::cout << "Usage[qcount]: [d,s]\n"; return 0; }
+  if (argc != 2) { std::cout << "Usage[qcount]: [d,s,os]\n"; return 0; }
   const std::string option = argv[1];
   if (option == "d") {
     if (n % 2 == 0) {
@@ -177,6 +233,18 @@ int main(const int argc, const char* const argv[]) {
       simple_backtracking(setbits(n/2), 0, 0, 0, 0);
       const count_t half = count; count = 0;
       simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
+  }
+  else if (option == "os") {
+    if (n % 2 == 0) {
+      op_simple_backtracking(setbits(n/2), 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      op_simple_backtracking(setbits(n/2), 0);
+      const count_t half = count; count = 0;
+      op_simple_backtracking(queen_t().set(n/2), 0);
       std::cout << 2*half + count << " " << nodes << "\n";
     }
   }
