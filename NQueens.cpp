@@ -20,14 +20,12 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
 
 TODOS:
 
-1. Simple backtracking using complete diagonal and antidiagonal information:
-   - All 2N-1 diagonals and 2N-1 antidiagonals are represented.
-   - diagd is a 2N-1 bitset:
-     - Field (variable) (x,y) has abstract diagonal-index x-y, which ranges
-       from 1-N to N-1, and then we set i = (x-y) + (N-1) with 0 <= i <= 2N-2.
-   - antid is a 2N-1 bitset:
-     - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
-       N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
+1. Optimising simple_backtracking:
+   - As we place the columns from left to right always, we need not check the initial fields.
+   - In backtracking, availablility of fields (in for loop) need not be from the starting.
+     - If some k columns are placed i.e. the size then the computation can be start directly from size.
+   - In rowavail, instead of initialising newavail empty, can be initialised with columns directly.
+
 */
 
 
@@ -73,6 +71,9 @@ inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
   x[(i+j) - 2] = true;
   return x;
 }
+// Instead of initialising newavail to empty, can be initialised with ncolumns directly.
+// The or operation and access to diagonals and antidiagonals can be avoided
+// where the field is already set in columns.
 inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i) noexcept {
   queen_t newavail;
   for (size_t j = 0; j < n; ++j) {
