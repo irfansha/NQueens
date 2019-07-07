@@ -24,7 +24,11 @@ TODOS:
    - The idea here is that choosing middle rows first might increase the propagation.
    - However we allow arbitary sequence of rows to see the difference.
 
-2. strengthened row-unsat test:
+2. Provide middle enumeration for the rows.
+   - we choose the middle rows and move towards the top and bottom rows.
+   - the idea is same as the idea for implementation in GenericSAT.
+
+3. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
 */
