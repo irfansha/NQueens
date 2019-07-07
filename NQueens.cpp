@@ -26,6 +26,7 @@ TODOS:
    - perhaps there is unsatisfiability seen in the adjacent rows.
 
 2. First unsat in adjacent rows of current set row to be computed.
+   - First add rows bitset to represent set rows.
    - Function neighrow_unsat:
       - Input: const size_t i i.e., current row index
       - check if any of the adjacent rows are unsatisfiable.
@@ -195,6 +196,19 @@ inline void middle_enum() noexcept {
   }
 }
 
+queen_t rows;
+
+inline bool neighrow_unsat(const queen_t columns, const queend_t diag, const queend_t antid, const size_t i) {
+  if (i != 0 and !rows[i-1]){
+    const queen_t nextavail(rowavail(columns,diag,antid,i-1));
+    if (nextavail.all()) return false;
+  }
+  if (i != n-1 and !rows[i+1]){
+    const queen_t nextavail(rowavail(columns,diag,antid,i+1));
+    if (nextavail.all()) return false;
+  }
+  return true;
+}
 
 // Simple backtracking funtion with specific order of rows
 inline void randomrow_simple_backtracking(const queen_t avail,
@@ -208,14 +222,17 @@ inline void randomrow_simple_backtracking(const queen_t avail,
   else {
     const size_t cur_row = rowvec[size];
     const size_t next_row = rowvec[size+1];
+    rows[cur_row] = 1;
     for (size_t i = 0; i < n; ++i) {
       if (not avail[i]) continue;
       const queen_t ncolumns(set(columns,i));
       const queend_t ndiag(setdiag(diag,cur_row,i));
       const queend_t nantid(setantid(antid,cur_row,i));
+      if (!neighrow_unsat(ncolumns,ndiag,nantid,i)) continue;
       const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,next_row));
       if (newavail.any()) randomrow_simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
     }
+    rows[cur_row] = 0;
   }
 }
 
