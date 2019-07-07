@@ -21,14 +21,11 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
 TODOS:
 
 1. Simple backtracking but choosing in a predefined sequence.
-   - The idea here is that choosing middle rows first might increase the propagation.
-   - However we allow arbitary sequence of rows to see the difference.
-
-2. Provide middle enumeration for the rows.
-   - we choose the middle rows and move towards the top and bottom rows.
-   - the idea is same as the idea for implementation in GenericSAT.
-
-3. strengthened row-unsat test:
+   - the middle order of rows does not seem to have any difference at all for even N.
+   - there seems to be some difference in odd N.
+   - First need to provide some other order (may be random) to check the effect.
+   - perhaps there is unsatisfiability seen in the adjacent rows.
+2. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
 */
