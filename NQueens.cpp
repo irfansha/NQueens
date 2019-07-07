@@ -21,13 +21,14 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
 TODOS:
 
 1. Simple backtracking using complete diagonal and antidiagonal information:
-   - all 2N-1 diagonals and 2N-1 antidiagonals are represented.
+   - All 2N-1 diagonals and 2N-1 antidiagonals are represented.
    - diagd is a 2N-1 bitset:
      - Field (variable) (x,y) has abstract diagonal-index x-y, which ranges
        from 1-N to N-1, and then we set i = (x-y) + (N-1) with 0 <= i <= 2N-2.
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
+   - Need a new type for 2N-1 bitset for diagonals and antidiagonals, say queend_t.
 */
 
 
