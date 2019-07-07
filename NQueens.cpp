@@ -22,14 +22,16 @@ TODOS:
 
 1. Simple backtracking but choosing in a predefined sequence.
    - the middle order of rows does not seem to have any difference at all for even N.
-   - there seems to be some difference in odd N.
-   - First need to provide some other order (may be random) to check the effect.
+   - better order of rows to be indentified.
    - perhaps there is unsatisfiability seen in the adjacent rows.
 
-2. testing the effect of row order using random oder of rows.
-   - use shuffle in random library to see the difference.
+2. First unsat in adjacent rows of current set row to be computed.
+   - Function neighrow_unsat:
+      - Input: const size_t i i.e., current row index
+      - check if any of the adjacent rows are unsatisfiable.
+      - returns if satisfiable or unsatisfiable.
 
-2. strengthened row-unsat test:
+3. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
 */
