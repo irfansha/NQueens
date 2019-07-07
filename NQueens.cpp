@@ -170,6 +170,26 @@ inline void rowise_enum() {
   }
 }
 
+inline void middle_enum() noexcept {
+  rowvec_t v;
+  v.reserve(n);
+  for (size_t i = 0; i < n; ++i) {
+      v.push_back(i);
+  }
+  size_t count_flip = 0;
+  while(!v.empty()) {
+    size_t l;
+    if(v.size()%2 == 1) {l = (v.size()-1)/2;}
+    else{
+      if (count_flip%2 == 0) {l = (v.size()/2)-1;}
+      else {l = (v.size()/2);}
+      ++count_flip;
+    }
+    rowvec.push_back(v[l]);
+    v.erase (v.begin()+l);
+  }
+}
+
 
 // Simple backtracking funtion with specific order of rows
 inline void randomrow_simple_backtracking(const queen_t avail,
@@ -182,12 +202,13 @@ inline void randomrow_simple_backtracking(const queen_t avail,
   if (sp1 == n) ++count;
   else {
     const size_t cur_row = rowvec[size];
+    const size_t next_row = rowvec[size+1];
     for (size_t i = 0; i < n; ++i) {
       if (not avail[i]) continue;
       const queen_t ncolumns(set(columns,i));
       const queend_t ndiag(setdiag(diag,cur_row,i));
       const queend_t nantid(setantid(antid,cur_row,i));
-      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,sp1));
+      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,next_row));
       if (newavail.any()) randomrow_simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
     }
   }
@@ -250,7 +271,7 @@ inline void op_simple_backtracking(const queen_t avail, const size_t size) noexc
 }
 
 int main(const int argc, const char* const argv[]) {
-  if (argc != 2) { std::cout << "Usage[qcount]: [d,s,os]\n"; return 0; }
+  if (argc != 2) { std::cout << "Usage[qcount]: [d,s,f,m,os]\n"; return 0; }
   const std::string option = argv[1];
   if (option == "d") {
     if (n % 2 == 0) {
@@ -278,6 +299,19 @@ int main(const int argc, const char* const argv[]) {
   }
   else if (option == "f") {
     rowise_enum();
+    if (n % 2 == 0) {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      const count_t half = count; count = 0;
+      randomrow_simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
+  }
+  else if (option == "m") {
+    middle_enum();
     if (n % 2 == 0) {
       randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
       std::cout << 2*count << " " << nodes << "\n";
