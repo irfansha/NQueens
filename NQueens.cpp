@@ -161,19 +161,32 @@ inline void simple_backtracking(const queen_t avail,
 
 }
 
-int main() {
-  if (n % 2 == 0) {
-    simple_backtracking(setbits(n/2), 0, 0, 0, 0);
-    //backtracking(setbits(n/2), 0, 0, 0, 0);
-    std::cout << 2*count << " " << nodes << "\n";
+int main(const int argc, const char* const argv[]) {
+  if (argc != 2) { std::cout << "Usage[qcount]: [d,s]\n"; return 0; }
+  const std::string option = argv[1];
+  if (option == "d") {
+    if (n % 2 == 0) {
+      backtracking(setbits(n/2), 0, 0, 0, 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      backtracking(setbits(n/2), 0, 0, 0, 0);
+      const count_t half = count; count = 0;
+      backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
   }
-  else {
-    simple_backtracking(setbits(n/2), 0, 0, 0, 0);
-    //backtracking(setbits(n/2), 0, 0, 0, 0);
-    const count_t half = count; count = 0;
-    simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
-    //backtracking(queen_t().set(n/2), 0, 0, 0, 0);
-    std::cout << 2*half + count << " " << nodes << "\n";
+  else if (option == "s") {
+    if (n % 2 == 0) {
+      simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      const count_t half = count; count = 0;
+      simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
   }
 }
 
