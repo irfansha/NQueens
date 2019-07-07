@@ -12,22 +12,22 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
   the makefile in the same directory as this file:
 
 > make SETN=-DNN=16
-> ./qcount_ct
+> ./qcount
 
-  "ct" stands for "compile-time".
   The same basic algorithm as NQueens.cpp, but using std::bitset<N>.
 
   Version 1.0.1, 17.3.2019.
 
 TODOS:
 
-1. Using complete diagonal and antidiagonal information:
-   - Instead of shifting diagonals, we have 2*N-1 bits to represent diagonals and antidiagonals set.
-   - The columns are represented with 2*N-1 bits but only N bits are considered at each step.
-      - The columns are now shifted at each step.
-   - This greatly simplies the complexity in double sweep algorithm.
-2. UnSAT test:
-   - XXX
+1. Simple backtracking using complete diagonal and antidiagonal information:
+   - all 2N-1 diagonals and 2N-1 antidiagonals are represented.
+   - diagd is a 2N-1 bitset:
+     - Field (variable) (x,y) has abstract diagonal-index x-y, which ranges
+       from 1-N to N-1, and then we set i = (x-y) + (N-1) with 0 <= i <= 2N-2.
+   - antid is a 2N-1 bitset:
+     - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
+       N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
 */
 
 
