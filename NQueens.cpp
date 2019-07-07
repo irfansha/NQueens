@@ -20,16 +20,8 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
 
 TODOS:
 
-1. Optimising simple_backtracking:
-   - As we place the columns from left to right always, we need not check the initial fields.
-   - In backtracking, availablility of fields (in for loop) need not be from the starting.
-     - If some k columns are placed i.e. the size then the computation can be start directly from size.
-   - In rowavail, instead of initialising newavail empty, can be initialised with columns directly.
-
-2. Improved rowavail for rowwise implementation.
-   - Input: const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i
-   - Same as rowavail but the computation for newavail starts from first open column directly.
-   - Returns: newavail
+1. Improving simple_backtracking:
+   - The columns, diagonals and antidiagonals representations can be global avoiding copying.
 */
 
 
@@ -61,22 +53,18 @@ inline queen_t setbits(const size_t m) noexcept {
 }
 
 inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(i <= n);
-  assert(j <= n);
+  assert(i < n);
+  assert(j < n);
   assert(((i-j) + (n-1)) <= 2*n-2);
   x[(i-j) + (n-1)] = true;
   return x;
 }
 inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(i <= n);
-  assert(j <= n);
-  assert((i+j) <= 2*n-2);
+  assert(i < n);
+  assert(j < n);
   x[i+j] = true;
   return x;
 }
-// Instead of initialising newavail to empty, can be initialised with ncolumns directly.
-// The or operation and access to diagonals and antidiagonals can be avoided
-// where the field is already set in columns.
 inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t rowindex) noexcept {
   queen_t newavail;
   for (size_t j = 0; j < n; ++j) {
