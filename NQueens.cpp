@@ -86,6 +86,10 @@ inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
   x[(i+j) - 2] = true;
   return x;
 }
+inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i) noexcept {
+  queen_t newavail;
+  return newavail;
+}
 
 inline queen_t setneighbours(queen_t x, const size_t i) noexcept {
   assert(i < n);
