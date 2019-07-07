@@ -28,7 +28,6 @@ TODOS:
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
-   - Need a new type for 2N-1 bitset for diagonals and antidiagonals, say queend_t.
 */
 
 
@@ -46,9 +45,11 @@ typedef std::size_t size_t;
 # error "NN must be defined."
 #endif
 constexpr size_t n=NN;
+constexpr size_t dn=2*NN-1;
 
 typedef std::uint_fast64_t count_t; // counting solutions
 typedef std::bitset<n> queen_t;
+typedef std::bitset<dn> queend_t;
 
 inline queen_t setbits(const size_t m) noexcept {
   assert(m <= n);
