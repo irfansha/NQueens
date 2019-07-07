@@ -28,11 +28,7 @@ TODOS:
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
-2. Functions for setting diagonal and antidiagonal:
-   - setdiag:
-      - input: (i,j) and the diagonal x.
-      - set (i-j) + (N-1) in x to true.
-      - returns x.
+2. Function for setting antidiagonal:
    - setantid
       - input: (i,j) and the antidiagonal x.
       - set (i+j) - 2 in x to true.
@@ -65,6 +61,18 @@ inline queen_t setbits(const size_t m) noexcept {
   queen_t res;
   for (size_t i = 0; i < m; ++i) res[i] = true;
   return res;
+}
+
+
+// Here (i,j) is the queen position where the board starts from (1,1) bottom left corner.
+inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
+  assert(1 <= i);
+  assert(i <= n);
+  assert(1 <= j);
+  assert(j <= n);
+  assert(((i-j) + (n-1)) <= 2*n-2);
+  x[(i-j) + (n-1)] = true;
+  return x;
 }
 
 inline queen_t setneighbours(queen_t x, const size_t i) noexcept {
