@@ -28,19 +28,6 @@ TODOS:
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
-
-2. Simple backtracking function
-   - Input: queen_t avail, queen_t columns, queend_t diag, queend_t antid, size_t size
-   - If SAT increment count and return.
-   - for each open field in avail update columns, diag, antid.
-   - compute newavail.
-   - if not UNSAT call backtracking function with updated bitfields.
-   - Output: void.
-3. Function for computing available fields in a row:
-   - Input: queen_t ncolumns, queend_t ndiag, queend_t nantid, size_t i
-   - initialise queen_t avail.
-   - For each field in the ith row, the constraints are computed and set to either true or false in avail.
-   - Returns: queen_t avail.
 */
 
 
@@ -88,6 +75,9 @@ inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
 }
 inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i) noexcept {
   queen_t newavail;
+  for (size_t j = 0; j < n; ++j) {
+    newavail[j] = ncolumns[j] or ndiag[(i-j)+(n-1)] or nantid[(i+j)-2];
+  }
   return newavail;
 }
 
@@ -143,17 +133,46 @@ inline void backtracking(const queen_t avail,
     }
 }
 
+// Simple backtracking funtion.
+inline void simple_backtracking(const queen_t avail,
+  const queen_t columns, const queend_t diag, const queend_t antid,
+  const size_t size) noexcept {
+  assert(avail.any());
+  assert(columns.count() == size);
+  ++nodes;
+  const size_t sp1 = size+1;
+  assert(sp1 < n);
+  const queen_t nextavail(rowavail(columns,diag,antid,sp1+1));
+  if (nextavail.all()) return;
+  if (sp1+1 == n) {
+    for (size_t i = 0; i < n; ++i)
+      count += bool(avail[i] and not setneighbours(nextavail,i).all());
+  }
+  else
+    for (size_t i = 0; i < n; ++i) {
+      if (not avail[i]) continue;
+      const queen_t ncolumns(set(columns,i));
+      const queend_t ndiag(setdiag(diag,sp1,i));
+      const queend_t nantid(setantid(antid,sp1,i));
+      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,sp1+1));
+      if (newavail.any()) simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
+    }
+}
+
 }
 
 int main() {
   if (n % 2 == 0) {
-    backtracking(setbits(n/2), 0, 0, 0, 0);
+    simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+    //backtracking(setbits(n/2), 0, 0, 0, 0);
     std::cout << 2*count << " " << nodes << "\n";
   }
   else {
-    backtracking(setbits(n/2), 0, 0, 0, 0);
+    simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+    //backtracking(setbits(n/2), 0, 0, 0, 0);
     const count_t half = count; count = 0;
-    backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+    simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+    //backtracking(queen_t().set(n/2), 0, 0, 0, 0);
     std::cout << 2*half + count << " " << nodes << "\n";
   }
 }
