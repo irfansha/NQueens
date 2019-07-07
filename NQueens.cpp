@@ -25,6 +25,10 @@ TODOS:
    - there seems to be some difference in odd N.
    - First need to provide some other order (may be random) to check the effect.
    - perhaps there is unsatisfiability seen in the adjacent rows.
+
+2. testing the effect of row order using random oder of rows.
+   - use shuffle in random library to see the difference.
+
 2. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
@@ -33,7 +37,9 @@ TODOS:
 
 #include <bitset>
 #include <iostream>
+#include <algorithm>
 #include <vector>
+#include <random>
 
 #include <cstdlib>
 #include <cstdint>
@@ -268,7 +274,7 @@ inline void op_simple_backtracking(const queen_t avail, const size_t size) noexc
 }
 
 int main(const int argc, const char* const argv[]) {
-  if (argc != 2) { std::cout << "Usage[qcount]: [d,s,f,m,os]\n"; return 0; }
+  if (argc != 2) { std::cout << "Usage[qcount]: [d,s,f,m,r,os]\n"; return 0; }
   const std::string option = argv[1];
   if (option == "d") {
     if (n % 2 == 0) {
@@ -309,6 +315,20 @@ int main(const int argc, const char* const argv[]) {
   }
   else if (option == "m") {
     middle_enum();
+    if (n % 2 == 0) {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      const count_t half = count; count = 0;
+      randomrow_simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
+  }
+  else if (option == "r") {
+    middle_enum();
+    shuffle (rowvec.begin(), rowvec.end(), std::default_random_engine(3));
     if (n % 2 == 0) {
       randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
       std::cout << 2*count << " " << nodes << "\n";
