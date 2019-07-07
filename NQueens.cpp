@@ -20,10 +20,17 @@ Git Id: b713a0074311ad3f4f311dc9ed04381c2e877297
 
 TODOS:
 
-1. Improving simple_backtracking:
-   - The columns, diagonals and antidiagonals representations can be global avoiding copying.
-   - Unclear if making size global would make any difference.
-   - Using global variables does not seems to make any difference.
+1. Simple backtracking but choosing in a predefined sequence.
+   - The idea here is that choosing middle rows first might increase the propagation.
+   - However we allow arbitary sequence of rows to see the difference.
+
+2. randomrow_backtracking:
+   - Input: const queen_t avail, const queen_t columns, const queend_t diag, const queend_t antid, const size_t size
+   - Same as simple backtracking but chooses rows in a different order (specified as a global variable).
+
+3. strengthened row-unsat test:
+   - Instead of checking current row and next row for unsatisfiability
+     we allow arbitary rows ahead to test (this is assuming).
 */
 
 
@@ -180,7 +187,7 @@ inline queen_t rowavail(const size_t rowindex) noexcept {
   return newavail;
 }
 
-// Optimised simple backtracking funtion.
+// Simple backtracking funtion with global variables instead of copying
 inline void op_simple_backtracking(const queen_t avail, const size_t size) noexcept {
   assert(avail.any());
   assert(gcolumns.count() == size);
