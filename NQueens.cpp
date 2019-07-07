@@ -36,6 +36,11 @@ TODOS:
    - compute newavail.
    - if not UNSAT call backtracking function with updated bitfields.
    - Output: void.
+3. Function for computing available fields in a row:
+   - Input: queen_t ncolumns, queend_t ndiag, queend_t nantid, size_t i
+   - initialise queen_t avail.
+   - For each field in the ith row, the constraints are computed and set to either true or false in avail.
+   - Returns: queen_t avail.
 */
 
 
@@ -68,19 +73,15 @@ inline queen_t setbits(const size_t m) noexcept {
 
 // Here (i,j) is the queen position where the board starts from (1,1) bottom left corner.
 inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(1 <= i);
-  assert(i <= n);
-  assert(1 <= j);
-  assert(j <= n);
+  assert(1 <= i and i <= n);
+  assert(1 <= j and j <= n);
   assert(((i-j) + (n-1)) <= 2*n-2);
   x[(i-j) + (n-1)] = true;
   return x;
 }
 inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(1 <= i);
-  assert(i <= n);
-  assert(1 <= j);
-  assert(j <= n);
+  assert(1 <= i and i <= n);
+  assert(1 <= j and j <= n);
   assert(((i+j) - 2) <= 2*n-2);
   x[(i+j) - 2] = true;
   return x;
