@@ -28,6 +28,15 @@ TODOS:
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
+2. Functions for setting diagonal and antidiagonal:
+   - setdiag:
+      - input: (i,j) and the diagonal x.
+      - set (i-j) + (N-1) in x to true.
+      - returns x.
+   - setantid
+      - input: (i,j) and the antidiagonal x.
+      - set (i+j) - 2 in x to true.
+      - returns x.
 */
 
 
