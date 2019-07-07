@@ -60,28 +60,27 @@ inline queen_t setbits(const size_t m) noexcept {
   return res;
 }
 
-// Here (i,j) is the queen position where the board starts from (1,1) bottom left corner.
 inline queend_t setdiag(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(1 <= i and i <= n);
-  assert(1 <= j and j <= n);
+  assert(i <= n);
+  assert(j <= n);
   assert(((i-j) + (n-1)) <= 2*n-2);
   x[(i-j) + (n-1)] = true;
   return x;
 }
 inline queend_t setantid(queend_t x, const size_t i, const size_t j) noexcept {
-  assert(1 <= i and i <= n);
-  assert(1 <= j and j <= n);
-  assert(((i+j) - 2) <= 2*n-2);
-  x[(i+j) - 2] = true;
+  assert(i <= n);
+  assert(j <= n);
+  assert((i+j) <= 2*n-2);
+  x[i+j] = true;
   return x;
 }
 // Instead of initialising newavail to empty, can be initialised with ncolumns directly.
 // The or operation and access to diagonals and antidiagonals can be avoided
 // where the field is already set in columns.
-inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i) noexcept {
+inline queen_t rowavail(const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t rowindex) noexcept {
   queen_t newavail;
   for (size_t j = 0; j < n; ++j) {
-    newavail[j] = ncolumns[j] or ndiag[(i-j)+(n-1)] or nantid[(i+j)-2];
+    newavail[j] = ncolumns[j] or ndiag[(rowindex-j)+(n-1)] or nantid[rowindex+j];
   }
   return newavail;
 }
@@ -147,7 +146,7 @@ inline void simple_backtracking(const queen_t avail,
   ++nodes;
   const size_t sp1 = size+1;
   assert(sp1 < n);
-  const queen_t nextavail(rowavail(columns,diag,antid,sp1+1));
+  const queen_t nextavail(rowavail(columns,diag,antid,sp1));
   if (nextavail.all()) return;
   if (sp1+1 == n) {
     for (size_t i = 0; i < n; ++i)
@@ -157,9 +156,9 @@ inline void simple_backtracking(const queen_t avail,
     for (size_t i = 0; i < n; ++i) {
       if (not avail[i]) continue;
       const queen_t ncolumns(set(columns,i));
-      const queend_t ndiag(setdiag(diag,sp1,i));
-      const queend_t nantid(setantid(antid,sp1,i));
-      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,sp1+1));
+      const queend_t ndiag(setdiag(diag,sp1-1,i));
+      const queend_t nantid(setantid(antid,sp1-1,i));
+      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,sp1));
       if (newavail.any()) simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
     }
 }
