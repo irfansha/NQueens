@@ -24,11 +24,7 @@ TODOS:
    - The idea here is that choosing middle rows first might increase the propagation.
    - However we allow arbitary sequence of rows to see the difference.
 
-2. randomrow_backtracking:
-   - Input: const queen_t avail, const queen_t columns, const queend_t diag, const queend_t antid, const size_t size
-   - Same as simple backtracking but chooses rows in a different order (specified as a global variable).
-
-3. strengthened row-unsat test:
+2. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
 */
@@ -36,6 +32,7 @@ TODOS:
 
 #include <bitset>
 #include <iostream>
+#include <vector>
 
 #include <cstdlib>
 #include <cstdint>
@@ -159,6 +156,38 @@ inline void simple_backtracking(const queen_t avail,
     }
 }
 
+typedef std::vector<size_t> rowvec_t;
+
+rowvec_t rowvec;
+
+inline void rowise_enum() {
+  for (size_t i = 0; i < n; ++i) {
+  rowvec.push_back(i);
+  }
+}
+
+
+// Simple backtracking funtion with specific order of rows
+inline void randomrow_simple_backtracking(const queen_t avail,
+  const queen_t columns, const queend_t diag, const queend_t antid,
+  const size_t size) noexcept {
+  assert(avail.any());
+  assert(columns.count() == size);
+  ++nodes;
+  const size_t sp1 = size+1;
+  if (sp1 == n) ++count;
+  else {
+    const size_t cur_row = rowvec[size];
+    for (size_t i = 0; i < n; ++i) {
+      if (not avail[i]) continue;
+      const queen_t ncolumns(set(columns,i));
+      const queend_t ndiag(setdiag(diag,cur_row,i));
+      const queend_t nantid(setantid(antid,cur_row,i));
+      const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,sp1));
+      if (newavail.any()) randomrow_simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
+    }
+  }
+}
 
 queen_t gcolumns;
 queend_t gdiag, gantid;
@@ -240,6 +269,19 @@ int main(const int argc, const char* const argv[]) {
       simple_backtracking(setbits(n/2), 0, 0, 0, 0);
       const count_t half = count; count = 0;
       simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
+      std::cout << 2*half + count << " " << nodes << "\n";
+    }
+  }
+  else if (option == "f") {
+    rowise_enum();
+    if (n % 2 == 0) {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      std::cout << 2*count << " " << nodes << "\n";
+    }
+    else {
+      randomrow_simple_backtracking(setbits(n/2), 0, 0, 0, 0);
+      const count_t half = count; count = 0;
+      randomrow_simple_backtracking(queen_t().set(n/2), 0, 0, 0, 0);
       std::cout << 2*half + count << " " << nodes << "\n";
     }
   }
