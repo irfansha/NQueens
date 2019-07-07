@@ -28,6 +28,14 @@ TODOS:
    - antid is a 2N-1 bitset:
      - (x,y) has abstract antidiagonal-index x+y, which ranges from 1+1 to
        N+N, and then we set i = (x+y) - 2 with 0 <= i <= 2N-2.
+
+2. Simple backtracking function
+   - Input: queen_t avail, queen_t columns, queend_t diag, queend_t antid, size_t size
+   - If SAT increment count and return.
+   - for each open field in avail update columns, diag, antid.
+   - compute newavail.
+   - if not UNSAT call backtracking function with updated bitfields.
+   - Output: void.
 */
 
 
