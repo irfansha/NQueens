@@ -26,6 +26,10 @@ TODOS:
      - If some k columns are placed i.e. the size then the computation can be start directly from size.
    - In rowavail, instead of initialising newavail empty, can be initialised with columns directly.
 
+2. Improved rowavail for rowwise implementation.
+   - Input: const queen_t ncolumns, const queend_t ndiag, const queend_t nantid, const size_t i
+   - Same as rowavail but the computation for newavail starts from first open column directly.
+   - Returns: newavail
 */
 
 
