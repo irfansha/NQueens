@@ -30,6 +30,11 @@ TODOS:
      we allow arbitary rows ahead to test (this is assuming).
    - Perhaps we allow complete (in all rows) ALO unsat test:
      - As we have the rows set already we simply check the rest of the rows for unsatisfiability.
+
+3. Function allrow-unsat:
+   - Input: const queen_t columns, const queend_t diag, const queend_t antid.
+   - Only for the rows which are not set a queen, the available fields are computed.
+   - returns if unsatisfiability is found.
 */
 
 
