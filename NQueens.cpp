@@ -30,11 +30,6 @@ TODOS:
      we allow arbitary rows ahead to test (this is assuming).
    - Perhaps we allow complete (in all rows) ALO unsat test:
      - As we have the rows set already we simply check the rest of the rows for unsatisfiability.
-
-3. Function allrow-unsat:
-   - Input: const queen_t columns, const queend_t diag, const queend_t antid.
-   - Only for the rows which are not set a queen, the available fields are computed.
-   - returns if unsatisfiability is found.
 */
 
 
@@ -210,6 +205,15 @@ inline bool neighrow_unsat(const queen_t columns, const queend_t diag, const que
   return true;
 }
 
+inline bool allrow_unsat(const queen_t columns, const queend_t diag, const queend_t antid) {
+  for (size_t i = 0; i < n; ++i) {
+    if (rows[i]) continue;
+    const queen_t nextavail(rowavail(columns,diag,antid,i));
+    if (nextavail.all()) return false;
+  }
+  return true;
+}
+
 // Simple backtracking funtion with specific order of rows
 inline void randomrow_simple_backtracking(const queen_t avail,
   const queen_t columns, const queend_t diag, const queend_t antid,
@@ -228,7 +232,8 @@ inline void randomrow_simple_backtracking(const queen_t avail,
       const queen_t ncolumns(set(columns,i));
       const queend_t ndiag(setdiag(diag,cur_row,i));
       const queend_t nantid(setantid(antid,cur_row,i));
-      if (!neighrow_unsat(ncolumns,ndiag,nantid,i)) continue;
+      //if (!neighrow_unsat(ncolumns,ndiag,nantid,i)) continue;
+      if (!allrow_unsat(ncolumns,ndiag,nantid)) continue;
       const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,next_row));
       if (newavail.any()) randomrow_simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
     }
