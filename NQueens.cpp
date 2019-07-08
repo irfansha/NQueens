@@ -25,10 +25,8 @@ TODOS:
    - better order of rows to be indentified.
    - perhaps there is unsatisfiability seen in the adjacent rows.
 
-2. strengthened row-unsat test:
-   - Instead of checking current row and next row for unsatisfiability
-     we allow arbitary rows ahead to test (this is assuming).
-   - Perhaps we allow complete (in all rows) ALO unsat test:
+2. Strengthened column-unsat test:
+   - We allow complete (in all columns) ALO unsat test:
      - As we have the rows set already we simply check the rest of the rows for unsatisfiability.
 */
 
