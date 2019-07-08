@@ -35,9 +35,6 @@ TODOS:
 3. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
-
-4. Run for N = 1 to 18 for rowwise and middle row to see the difference in q.
-   - Need to add N as a parameter instead of compile time argument.
 */
 
 
