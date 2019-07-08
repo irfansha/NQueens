@@ -25,14 +25,7 @@ TODOS:
    - better order of rows to be indentified.
    - perhaps there is unsatisfiability seen in the adjacent rows.
 
-2. First unsat in adjacent rows of current set row to be computed.
-   - First add rows bitset to represent set rows.
-   - Function neighrow_unsat:
-      - Input: const size_t i i.e., current row index
-      - check if any of the adjacent rows are unsatisfiable.
-      - returns if satisfiable or unsatisfiable.
-
-3. strengthened row-unsat test:
+2. strengthened row-unsat test:
    - Instead of checking current row and next row for unsatisfiability
      we allow arbitary rows ahead to test (this is assuming).
 */
