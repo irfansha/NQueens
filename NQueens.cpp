@@ -212,6 +212,23 @@ inline bool allrow_unsat(const queen_t columns, const queend_t diag, const queen
   return true;
 }
 
+inline queen_t colavail(const queend_t ndiag, const queend_t nantid, const size_t colindex) noexcept {
+  queen_t newavail;
+  for (size_t i = 0; i < n; ++i) {
+    newavail[i] = rows[i] or ndiag[(i-colindex)+(n-1)] or nantid[i+colindex];
+  }
+  return newavail;
+}
+
+inline bool allcol_unsat(const queen_t columns, const queend_t diag, const queend_t antid) {
+  for (size_t j = 0; j < n; ++j) {
+    if (columns[j]) continue;
+    const queen_t nextavail(colavail(diag,antid,j));
+    if (nextavail.all()) return false;
+  }
+  return true;
+}
+
 // Simple backtracking funtion with specific order of rows
 inline void randomrow_simple_backtracking(const queen_t avail,
   const queen_t columns, const queend_t diag, const queend_t antid,
@@ -232,6 +249,7 @@ inline void randomrow_simple_backtracking(const queen_t avail,
       const queend_t nantid(setantid(antid,cur_row,i));
       //if (!neighrow_unsat(ncolumns,ndiag,nantid,i)) continue;
       if (!allrow_unsat(ncolumns,ndiag,nantid)) continue;
+      if (!allcol_unsat(ncolumns,ndiag,nantid)) continue;
       const queen_t newavail(~rowavail(ncolumns,ndiag,nantid,next_row));
       if (newavail.any()) randomrow_simple_backtracking(newavail,ncolumns,ndiag,nantid,sp1);
     }
